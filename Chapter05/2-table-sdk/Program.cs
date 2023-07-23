@@ -29,14 +29,14 @@ namespace TheCloudShopsTableDemo
             DeleteItemAndTable(client, "ADatum", "ReSellers");
         }
 
-        private static void DeleteItemAndTable(TableClient clinet, string CName, string CType)
+        private static void DeleteItemAndTable(TableClient tableClient, string CName, string CType)
         {
-            clinet.DeleteEntity(CType, CName); //delete entity
+            tableClient.DeleteEntity(CType, CName); //delete entity
 
             Console.WriteLine("Press key for delete table");
             Console.ReadLine();
 
-            clinet.Delete(); //delete table
+            tableClient.Delete(); //delete table
             Console.WriteLine("Table deleted");
 
         }
