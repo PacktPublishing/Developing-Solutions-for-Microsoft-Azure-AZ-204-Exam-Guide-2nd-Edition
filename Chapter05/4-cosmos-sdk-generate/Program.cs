@@ -10,9 +10,9 @@ namespace TheCloudShops_Loader
     public class Program
     {
         // The Azure Cosmos DB endpoint to run this sample.
-        private static readonly string EndpointUri = "https://cosmosdb-21198.documents.azure.com:443/";
+        private static readonly string EndpointUri = "<your cosmos db url>";
         // The primary key for the Azure Cosmos account.
-        private static readonly string PrimaryKey = "NpKNVqa5f8z5qzNiB2iOmwfuvo9PMiKw7mJu6odrKyRaOPKwT9q9tLmilQN0TjzdAWN71qeTybnuACDb4PmKyw==";
+        private static readonly string PrimaryKey = "<your key>";
 
         private CosmosClient cosmosClient;
         private Database database;

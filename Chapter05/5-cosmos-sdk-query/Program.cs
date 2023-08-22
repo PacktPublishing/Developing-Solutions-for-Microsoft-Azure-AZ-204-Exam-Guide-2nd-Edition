@@ -16,9 +16,9 @@ namespace TheCloudShops_Selector
     public class Program
     {
         // The Azure Cosmos DB endpoint to run this sample.
-        private static readonly string EndpointUri = "https://cosmosdb-21198.documents.azure.com:443/";
+        private static readonly string EndpointUri = "<your cosmos db endpoint>;
         // The primary key for the Azure Cosmos account.
-        private static readonly string PrimaryKey = "NpKNVqa5f8z5qzNiB2iOmwfuvo9PMiKw7mJu6odrKyRaOPKwT9q9tLmilQN0TjzdAWN71qeTybnuACDb4PmKyw==";
+        private static readonly string PrimaryKey = "<your key>";
 
         // The Cosmos client instance
         private CosmosClient cosmosClient;
@@ -128,7 +128,7 @@ namespace TheCloudShops_Selector
 
             //Replace the item with the updated content
             OrderResponse = await this.container.ReplaceItemAsync<Order>(itemBody, itemBody.id, new PartitionKey(itemBody.OrderAddress.City));
-            Console.WriteLine("Updated Order Number {0}.\n Number is now: {1}\n Operation consumed {2} RUs", old number, itemBody.OrderNumber, OrderResponse.RequestCharge);
+            Console.WriteLine("Updated Order Number {0}.\n Number is now: {1}\n Operation consumed {2} RUs", oldNumber, itemBody.OrderNumber, OrderResponse.RequestCharge);
         }
 
     }

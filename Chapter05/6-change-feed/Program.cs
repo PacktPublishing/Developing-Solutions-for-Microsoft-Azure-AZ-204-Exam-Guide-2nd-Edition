@@ -19,9 +19,9 @@ namespace TheCloudShops_Processor
     public class Program
     {
         // The Azure Cosmos DB endpoint for running this sample.
-        private static readonly string EndpointUri = "";
+        private static readonly string EndpointUri = "<your cosmos db endpoint>";
         // The primary key for the Azure Cosmos account.
-        private static readonly string PrimaryKey = "";
+        private static readonly string PrimaryKey = "<your key>";
 
         private CosmosClient cosmosClient;
         private Database database;

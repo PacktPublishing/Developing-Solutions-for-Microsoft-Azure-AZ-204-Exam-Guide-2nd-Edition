@@ -1,0 +1,32 @@
+##########################################################################################
+# These commands use files located in the current folder and should be executed locally. 
+# Make sure you install Azure CLI  http://aka.ms/azcli
+##########################################################################################
+
+#create the resource group
+az group create -l canadacentral -n AzureBlobsSync-RG
+
+#to avoid name collisions generate the unique name for your account
+account=azureblobsca$RANDOM
+
+#create an Azure Storage account 
+az storage account create --name $account --resource-group AzureBlobsSync-RG 
+echo $account 
+
+#retrieve key
+key=$(az storage account keys list --account-name $account --query [0].value -o tsv)
+
+#enable static website
+az storage blob service-properties update --account-name $account --static-website --404-document 404.html --index-document index.html --account-key $key
+
+#upload files to the folder
+az storage blob upload  --account-name $account  --account-key $key --container-name '$web' --file 404.html --name 404.html
+az storage blob upload  --account-name $account  --account-key $key --container-name '$web' --file index.html --name index.html
+az storage blob upload  --account-name $account  --account-key $key --container-name '$web' --file logo.png --name logo.png
+
+#retrieve static Url
+url=$(az storage account show --name $account --query "primaryEndpoints.web" --output tsv)
+echo "your website main page: '$url'"
+
+#test 404 page
+echo "your web site not-found page: '$url/notfound'"
