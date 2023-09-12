@@ -1,0 +1,11 @@
+﻿@page
+@inject IConfiguration Configuration
+@model IndexModel
+@{
+    ViewData["Title"] = "Slots demo";
+}
+
+<div class="text-center">
+    <h3>Original slot: @Configuration["ORIGINAL_SLOT"].</h3>
+    <h3>Current slot: @Configuration["CURRENT_SLOT"].</h3>
+</div>

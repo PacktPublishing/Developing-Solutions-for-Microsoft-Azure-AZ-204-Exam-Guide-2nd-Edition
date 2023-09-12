@@ -1,0 +1,14 @@
+﻿@page
+@inject IConfiguration Configuration
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+    HttpClient client = new HttpClient();
+    HttpResponseMessage response = await client.GetAsync(Configuration["API_URL"]);
+    var responseBody = await response.Content.ReadAsStringAsync();
+    var result = new JsonResult(responseBody).Value;
+}
+
+<div class="text-center">
+    <p>@result</p>
+</div>

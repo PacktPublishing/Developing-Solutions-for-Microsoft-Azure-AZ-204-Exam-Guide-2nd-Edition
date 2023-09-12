@@ -1,0 +1,21 @@
+services:
+
+  demo-api:
+    image: demo-api
+    build:
+      context: ./demoapi
+      dockerfile: Dockerfile
+    ports:
+      - "5101:80"
+
+  demo-app:
+    image: demo-app
+    build:
+      context: ./demoapp
+      dockerfile: Dockerfile
+    ports:
+      - "5102:80"
+    depends_on:
+      - demo-api
+    environment:
+      - API_URL=http://host.docker.internal:5101/weatherforecast
