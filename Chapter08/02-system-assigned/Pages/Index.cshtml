@@ -1,0 +1,7 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h3>Secret value: @(Environment.GetEnvironmentVariable("KV_SECRET"))</h3>
