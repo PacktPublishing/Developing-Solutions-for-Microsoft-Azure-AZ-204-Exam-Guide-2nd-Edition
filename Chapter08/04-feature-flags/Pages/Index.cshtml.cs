@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.FeatureManagement.Mvc;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.FeatureManagement;
 
-namespace _05_feature_flags.Pages;
+namespace _04_feature_flags.Pages;
 
 public class IndexModel : PageModel
 {
@@ -13,8 +15,8 @@ public class IndexModel : PageModel
         _logger = logger;
     }
 
-    public void OnGet()
+    public  void OnGet()
     {
-
+        
     }
 }

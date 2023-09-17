@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "_05_feature_flags": {
+    "_04_feature_flags": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
