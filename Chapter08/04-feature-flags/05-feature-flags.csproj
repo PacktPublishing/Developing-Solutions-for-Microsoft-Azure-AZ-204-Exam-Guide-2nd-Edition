@@ -4,13 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>_03_app_configuration_labels</RootNamespace>
-    <UserSecretsId>a96741ab-879a-4417-8f15-0762ff42e221</UserSecretsId>
+    <RootNamespace>_04_feature_flags</RootNamespace>
+    <UserSecretsId>dbaae771-f91a-42b6-8202-d9dd4c055189</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="2.5.1" />
   </ItemGroup>
 
 </Project>

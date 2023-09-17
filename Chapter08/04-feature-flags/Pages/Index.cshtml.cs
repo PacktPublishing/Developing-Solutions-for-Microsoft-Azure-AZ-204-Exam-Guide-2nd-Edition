@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.FeatureManagement.Mvc;
 
-namespace _03_app_configuration_labels.Pages;
+namespace _05_feature_flags.Pages;
 
 public class IndexModel : PageModel
 {
