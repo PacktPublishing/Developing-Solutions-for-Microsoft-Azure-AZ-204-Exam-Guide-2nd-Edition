@@ -11,7 +11,7 @@ cdnaccount=azure-cdn-$RANDOM
 blobaccount=azureblob$RANDOM
 
 
-#create Azure storage for static file source in South Korea or another faraway region of your choice.
+#create Azure storage for static file sources in South Korea or another faraway region of your choice.
 az storage account create --name $blobaccount --resource-group AzureCDN-RG --location koreasouth --allow-blob-public-access true
 
 #get the key
@@ -24,13 +24,13 @@ az storage container create --name files --public-access container --account-nam
 echo https://$blobaccount.blob.core.windows.net/files
 
 
-#upload big image from local folder
+#upload a big image from a local folder
 az storage blob upload --name big.gif -f big.gif -c files --account-name $blobaccount --account-key $key
 
-#upload video  from local folder
+#upload video  from a local folder
 az storage blob upload --name cdn-demo.mp4 -f cdn-demo.mp4 -c files --account-name $blobaccount --account-key $key
 
-#upload JS  from local folder
+#upload JS  from a local folder
 az storage blob upload --name demo.js -f demo.js -c files --account-name $blobaccount --account-key $key
 
 #you can check the direct link to make sure the content is available
@@ -56,9 +56,9 @@ az storage blob upload  --account-name $blobaccount  --account-key $key --contai
 url=$(az storage account show --name $blobaccount --query "primaryEndpoints.web" --output tsv)
 echo $url
 
-#you can visit this URL from your browser and enable F12 tool to monitor the speed of loading.
+#you can visit this URL from your browser and enable the F12 tool to monitor the speed of loading.
 
-#create Basic SKU instance
+#create a Basic SKU instance
 az cdn profile create --location eastus2 --name $cdnaccount --resource-group AzureCDN-RG --sku Standard_Microsoft
 
 #create CDN endpoint 
@@ -70,6 +70,6 @@ az cdn endpoint create --name $cdnaccount  --origin $blobaccount.blob.core.windo
 echo https://$cdnaccount.azureedge.net/big.gif
 echo https://$cdnaccount.azureedge.net/cdn-demo.mp4
 
-echo "please save following values for next demo: $cdnaccount" 
-echo "please save following values for next demo: $blobaccount" 
+echo "Please save following values for the next demo: $cdnaccount" 
+echo "Please save following values for the next demo: $blobaccount" 
 

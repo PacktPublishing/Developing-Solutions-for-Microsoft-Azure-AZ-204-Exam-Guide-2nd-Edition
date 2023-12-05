@@ -19,14 +19,14 @@ lpush orders 23-R
 rpush orders 77
 lrange orders 0 -1           <--- should return full list
 
-lpop orders                  <--- should return first element
+lpop orders                  <--- should return the first element
 
 --------------------------------------------------------
 sadd users user1
 sadd users user2
-scard users                       <--- should return number of element
-smembers users                    <--- should return full set
-srandmember users 1               <--- should return random member
+scard users                    <--- should return the number of element
+smembers users                 <--- should return the full set
+srandmember users 1            <--- should return a random member
 
 --------------------------------------------------------
 

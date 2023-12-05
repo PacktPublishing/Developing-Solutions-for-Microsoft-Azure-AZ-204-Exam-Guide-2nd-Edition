@@ -1,5 +1,5 @@
 ##########################################################################################################
-# These commands use bash sytax and use files located in the current folder and should be executed locally. 
+# These commands use bash syntax and use files located in the current folder and should be executed locally. 
 ##########################################################################################################
 
 #make sure you use the latest version
@@ -22,10 +22,10 @@ az storage blob upload  --account-name $blobaccount  --account-key $key --contai
 #retrieve Static Url
 url=$(az storage account show --name $blobaccount --query "primaryEndpoints.web" --output tsv)
 echo $url
-#you can visit this URL from your browser and enable F12 tool to monitor the speed 
+#you can visit this URL from your browser and enable the F12 tool to monitor the speed 
 #and compare with what you have on the previous demo.
 
-#if click on the "click me" you will get "hello world!"
+#if click on the "click me" you will get "Hello world!"
 
 #replace links to files before upload
 sed -i "s/hello world/Azure Rocks/" demo.js 
@@ -39,6 +39,6 @@ echo $url
 
 az cdn endpoint purge -g AzureCDN-RG --name $cdnaccount  --profile-name $cdnaccount   --content-paths '/demo.js' 
 
-#revisit page again and try click on the button.
+#revisit the page again and try clicking on the button.
 echo $url
 
