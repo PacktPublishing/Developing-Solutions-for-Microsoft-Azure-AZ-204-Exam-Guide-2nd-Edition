@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <ApplicationInsightsResourceId>/subscriptions/e52566ba-42d2-462a-903c-c28a503e8316/resourceGroups/AppInsightsDemo-RG/providers/microsoft.insights/components/demo10406-ai</ApplicationInsightsResourceId>
+  </PropertyGroup>
+
+  <ItemGroup>  
+    <PackageReference Include="Azure.Identity" Version="1.10.2" />  
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />  
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />  
+    <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.22.0" />  
+    <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
+    <PackageReference Include="NuGet.Common" Version="6.8.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+
+##########################################################################################
+# These commands use bash syntax and references to files located in the current folder
+# Azure CLI can be downloaded from http://aka.ms/azcli. 
+# Visual Studio code and .Net 8 are required.
+# If you do not install ZIP console app you can use the PowerShell command Compress-Archive
+##########################################################################################
+
+#Should be updated with the name of your Web App with App Insights. 
+#The app name should NOT be ended with "-ai"
+appName=''  
+
+# Build and publish binaries to the folder 'publish'. required Dot Net Core 5 installed
+dotnet publish 'TheCloudShopsAI' -o 'publish'
+
+
+# Bash command ZIP
+zip -r TheCloudShopsAI.zip 'publish/.'
+# OR PowerShell command
+Compress-Archive -Path publish\* -DestinationPath TheCloudShopsAI.zip -force
+#alternative use Send to Zip from Windows File Explorer
+
+#deploy binaries to the Azure Web App
+az webapp deploy --resource-group appinsightsdemo-rg --name $appName --type zip --src-path 'TheCloudShopsAI.zip'
+
+#check the web app
+az webapp browse --name $appName --resource-group AppInsightsDemo-RG
