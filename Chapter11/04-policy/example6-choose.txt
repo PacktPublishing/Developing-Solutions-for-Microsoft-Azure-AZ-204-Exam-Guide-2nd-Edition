@@ -1,0 +1,7 @@
+<choose>
+    <when condition="@(context.Request.Certificate == null || !context.Request.Certificate.Verify() || context.Request.Certificate.Issuer != "issuer" || context.Request.Certificate.SubjectName.Name != "expected-name")" >
+        <return-response>
+            <set-status code="403" reason="Invalid client certificate" />
+        </return-response>
+    </when>
+</choose>

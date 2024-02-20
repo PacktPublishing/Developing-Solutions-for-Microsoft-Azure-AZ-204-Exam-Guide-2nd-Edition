@@ -1,0 +1,8 @@
+    <inbound>
+        <cache-lookup vary-by-developer="false" vary-by-developer-groups="false" downstream-caching-type="public" must-revalidate="true">
+            <vary-by-query-parameter>category</vary-by-query-parameter> 
+        </cache-lookup>
+    </inbound>
+    <outbound>
+        <cache-store duration="60" />
+    </outbound>

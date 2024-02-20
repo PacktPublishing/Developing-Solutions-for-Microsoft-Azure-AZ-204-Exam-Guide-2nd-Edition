@@ -1,0 +1,6 @@
+<inbound>
+    <quota-by-key calls="1000"
+          bandwidth="100"
+          renewal-period="2629800"
+          counter-key="@(context.Request.IpAddress)" />
+</inbound>

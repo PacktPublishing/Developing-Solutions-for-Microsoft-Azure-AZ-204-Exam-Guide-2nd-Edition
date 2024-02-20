@@ -1,0 +1,9 @@
+<inbound>
+   <return-response>
+      <set-status code="200" reason="Product found" />
+      <set-header name="source" exists-action="override">
+          <value>warehouse database</value>
+      </set-header>
+      <set-body>{"name":"#1 Product", "price": 500}</set-body>
+   </return-response>
+</inbound>

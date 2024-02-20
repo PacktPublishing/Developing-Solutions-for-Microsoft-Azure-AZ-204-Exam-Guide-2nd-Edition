@@ -1,0 +1,5 @@
+<inbound>
+   <rate-limit calls="1" 
+        renewal-period="10" 
+        counter-key="@(context.Request.IpAddress)" />
+</inbound>
