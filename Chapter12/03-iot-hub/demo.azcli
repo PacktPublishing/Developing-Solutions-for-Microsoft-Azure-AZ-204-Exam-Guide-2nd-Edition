@@ -1,7 +1,7 @@
 ##########################################################################################
 # Following commands should be executed in bash. 
-# Use CloudShell or install Azure CLI  http://aka.ms/azcli locally
-# The output and resources will be used for next step.
+# Use Cloud Shell or install Azure CLI http://aka.ms/azcli locally
+# The output and resources will be used for the next step.
 ##########################################################################################
 
 # add extensions
@@ -9,10 +9,10 @@ az extension add --upgrade -n azure-iot
 az extension add --upgrade -n stream-analytics
 
 
-# create resource group
+# Create a resource group
 az group create -l eastus -n IoTHubDemo-RG
 
-# to avoid name collisions generate unique name for your account
+# To avoid name collisions generate a unique name for your account
 iothub=msg$RANDOM
 
 # create a iot hub  
@@ -29,7 +29,7 @@ hubkey=$(az iot hub policy show --name "iothubowner" --hub-name $iothub --query 
 input="[{\"name\": \"inhub\",\"properties\": {\"type\": \"Stream\",\"datasource\": {\"type\": \"Microsoft.Devices/IotHubs\",\"properties\": {\"iotHubNamespace\": \"$iothub\",\"sharedAccessPolicyName\": \"iothubowner\",\"sharedAccessPolicyKey\": \"$hubkey\",\"consumerGroupName\": \"\$Default\",\"endpoint\": \"messages/events\"}},\"serialization\": {\"type\": \"Json\",\"properties\": {\"encoding\": \"UTF8\"}}}}]"
 
 #################################
-# provision output (strage)
+# provision output (storage)
 #################################
 
 # create a storage account 

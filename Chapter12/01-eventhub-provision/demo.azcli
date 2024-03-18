@@ -1,13 +1,13 @@
 ##########################################################################################
 # Following commands should be executed in bash. 
 # Use CloudShell or install Azure CLI  http://aka.ms/azcli locally
-# The output and resources will be used for next step.
+# The output and resources will be used for the next step.
 ##########################################################################################
 
-# create resource group
+# Create resource group
 az group create -l eastus -n EventHubDemo-RG
 
-# to avoid name collisions generate unique name for your account
+# To avoid name collisions generate a unique name for your account
 account=eventhub$RANDOM
 
 # create an Event Hubs namespace. 
@@ -22,16 +22,16 @@ az storage account create --name $account --resource-group EventHubDemo-RG
 # retrieve key
 key=$(az storage account keys list --account-name $account --query [0].value -o tsv)
 
-# create storage container by using key
+# create a storage container by using key
 az storage container create --name checkpoint --account-name $account  --account-key $key
 
-# create authorizaton string for event hub
+# create authorization string for the event hub
 az eventhubs eventhub authorization-rule create --name apps --rights Listen Send --eventhub-name $account --namespace-name $account --resource-group EventHubDemo-RG 
 
-# output the account
+# Output the account
 echo 'your eventhub account name: '$account
 
-# retrieve eventhub connection string for next demo code
+# retrieve eventhub connection string for the next demo code
 echo 'your eventhub connection string:'
 az eventhubs eventhub authorization-rule keys list --name apps --eventhub-name $account --namespace-name $account --resource-group EventHubDemo-RG --query primaryConnectionString -o tsv
 

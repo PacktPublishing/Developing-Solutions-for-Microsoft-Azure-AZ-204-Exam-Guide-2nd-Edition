@@ -1,15 +1,15 @@
 ##########################################################################################
 # Following commands should be executed in bash. Azure Cloud shell is preferable. 
-# To run localy install Azure CLI  http://aka.ms/azcli locally
+# To run locally install Azure CLI  http://aka.ms/azcli locally
 ##########################################################################################
 
-# create resource group
+# create a resource group
 az group create -l eastus -n EventGridDemo-RG
 
-# create topic for custom events
+# create a topic for custom events
 az eventgrid topic create --name custom-events-web --resource-group EventGridDemo-RG -l eastus
 
-# show endpoint for submitting custom events
+# Show endpoint for submitting custom events
 echo 'your endpoint:'
 az eventgrid topic show --name custom-events-web --resource-group EventGridDemo-RG --query "endpoint" -o tsv
 
@@ -41,4 +41,4 @@ az eventgrid event-subscription create --source-resource-id "/subscriptions/$sub
 az webapp browse --name $sitename --resource-group EventGridDemo-RG
 
 # cleanup 
-# all resource group EventGridDemo-RG, EventHubDemo-RG and EventGridMonitoring can be deleted
+# Now all resource group EventGridDemo-RG, EventHubDemo-RG and EventGridMonitoring can be deleted
