@@ -43,7 +43,8 @@ echo $blobstring
 az webapp config appsettings set -n $appName --settings SqlConnection="$sqlstring" -g AppInsightsDemo-RG
 az webapp config appsettings set -n $appName --settings BlobConnection="$blobstring" -g AppInsightsDemo-RG
 
-# Open the page from the web app.
+# Generate URL for open web app.
+url=$(az webapp config hostname list --webapp-name $appName --resource-group AppInsightsDemo-RG  --query [0].name -o tsv)
 echo "your web app name: $appName"
-az webapp browse --name $appName --resource-group AppInsightsDemo-RG
+echo "visit web app page: https://${url}"
 
