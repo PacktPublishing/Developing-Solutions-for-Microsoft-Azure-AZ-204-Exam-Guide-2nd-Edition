@@ -1,10 +1,12 @@
 
-##########################################################################################
+#######################################################################################################################################
 # These commands use bash syntax and references to files located in the current folder
-# Azure CLI can be downloaded from http://aka.ms/azcli. 
-# Visual Studio code and .Net 8 are required.
-# If you do not install ZIP console app you can use the PowerShell command Compress-Archive
-##########################################################################################
+# Local execution is preferable and Visual Studio code and .Net 8 are recommended. Azure CLI can be downloaded from http://aka.ms/azcli.
+#  >> Meanwhile you can execute those commands from Azure Cloud Shell but first you need clone the repo to Cloud Shell VM
+#  >> and run commands from "Developing-Solutions-for-Microsoft-Azure-AZ-204-Exam-Guide-2nd-Edition/Chapter10/3 - asp core" folder
+#
+# Please Note: If you got errror from ZIP console app you can use the PowerShell command Compress-Archive as alternative.
+#######################################################################################################################################
 
 #Should be updated with the name of your Web App with App Insights. 
 #The app name should NOT be ended with "-ai"
