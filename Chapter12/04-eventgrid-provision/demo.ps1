@@ -33,9 +33,9 @@ New-AzEventGridSubscription -EventSubscriptionName "group-monitor-sub"  -Endpoin
 ##  START EVENT HUB CONSUMER subscriber.exe FROM PREVIOUS DEMO   ##
 ###################################################################
 
-######################################################## 
-##  TO GENERATE ACTIVITY REPEAT THE FOLLOWING COMMAND  #
-######################################################## 
+###################################################################### 
+##  TO GENERATE ACTIVITY REPEAT THE FOLLOWING COMMAND several times  #
+###################################################################### 
 
 # Update tag of monitoring RG. Required about 45 to appear in the subscriber console
 Set-AzResourceGroup -name EventGridMonitoring -Tag @{Code=(Get-Random)}
