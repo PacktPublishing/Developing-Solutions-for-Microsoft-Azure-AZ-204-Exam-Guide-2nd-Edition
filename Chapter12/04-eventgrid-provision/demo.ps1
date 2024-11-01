@@ -9,13 +9,13 @@ $eventhub = ''  # <<<<<--- please provide the short name of eventhub from the pr
 $groupname = 'EventHubDemo-RG'
 
 #Create a resource group
-New-AzResourceGroup -Location 'UK South' -Name EventGridDemo-RG
+New-AzResourceGroup -Location eastus -Name EventGridDemo-RG
 
 #Enable the Event Grid resource provider
 Register-AzResourceProvider -ProviderNamespace Microsoft.EventGrid
 
 #Create a resource group to monitor
-New-AzResourceGroup -Location 'UK South' -Name EventGridMonitoring
+New-AzResourceGroup -Location eastus -Name EventGridMonitoring
 
 #Pull Azure subscription id
 $subid = (az account show --query id -o tsv)
