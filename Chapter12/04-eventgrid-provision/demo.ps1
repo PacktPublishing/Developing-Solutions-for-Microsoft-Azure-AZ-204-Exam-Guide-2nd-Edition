@@ -5,29 +5,32 @@
 ##########################################################################################
 
 #values from the previous run for Event Hub
-$eventhub="";  # <<<<<--- please provide the short name of eventhub from the previous run
-$groupname="EventHubDemo-RG"
-
-#To avoid name collisions generate a unique name for your account
-$account="eventgri"+(Get-Random) 
+$eventhub = ''  # <<<<<--- please provide the short name of eventhub from the previous run
+$groupname = 'EventHubDemo-RG'
 
 #Create a resource group
-New-AzResourceGroup -location eastus -name EventGridDemo-RG
+New-AzResourceGroup -Location eastus -Name EventGridDemo-RG
 
 #Enable the Event Grid resource provider
 Register-AzResourceProvider -ProviderNamespace Microsoft.EventGrid
 
 #Create a resource group to monitor
-New-AzResourceGroup -location eastus -name EventGridMonitoring
+New-AzResourceGroup -Location eastus -Name EventGridMonitoring
 
 #Pull Azure subscription id
-$subid=(az account show --query id -o tsv)
+$subid = (az account show --query id -o tsv)
 
 #Сonfigure event subscription endpoint
-$endpoint="/subscriptions/$subid/resourceGroups/$groupname/providers/Microsoft.EventHub/namespaces/$eventhub/eventhubs/$eventhub"
+$endpoint = "/subscriptions/$subid/resourceGroups/$groupname/providers/Microsoft.EventHub/namespaces/$eventhub/eventhubs/$eventhub"
 
-#Create a subscription for the events from the Resourece group
-New-AzEventGridSubscription -EventSubscriptionName "group-monitor-sub"  -EndpointType "eventhub" -Endpoint $endpoint -ResourceGroup "EventGridMonitoring"
+#Create event hub subscription destination object
+$destObj = New-AzEventGridEventHubEventSubscriptionDestinationObject -ResourceId $endpoint
+
+#Specify the scope to monitor
+$scope = "/subscriptions/$subid/resourceGroups/EventGridMonitoring"
+
+#Create a subscription for the events from the Resource group
+New-AzEventGridSubscription -Name 'group-monitor-sub' -Scope $scope -Destination $destObj
 
 ###################################################################
 ##  START EVENT HUB CONSUMER subscriber.exe FROM PREVIOUS DEMO   ##
@@ -38,6 +41,6 @@ New-AzEventGridSubscription -EventSubscriptionName "group-monitor-sub"  -Endpoin
 ###################################################################### 
 
 # Update tag of monitoring RG. Required about 45 to appear in the subscriber console
-Set-AzResourceGroup -name EventGridMonitoring -Tag @{Code=(Get-Random)}
+Set-AzResourceGroup -Name EventGridMonitoring -Tag @{ Code = (Get-Random) }
 
 # do not delete the provision resources, it will be required for next step
