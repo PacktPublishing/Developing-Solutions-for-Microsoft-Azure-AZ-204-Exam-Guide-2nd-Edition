@@ -8,12 +8,18 @@ using Microsoft.Azure.Cosmos;
 namespace TheCloudShopsTriggerTest
 {
 
+    /*
+     * PLEASE CREATE MANUALLY <PRE> TRIGGER FROM trigger.js FILE  
+     * BEFORE RUNNING THE CODE
+     */
+
+
     public class Program
     {
         // The Azure Cosmos DB endpoint for running this sample.
-        private static readonly string EndpointUri = "<your cosmos db endpoint>";
+        private static readonly string EndpointUri = "<your end point uri>";
         // The primary key for the Azure Cosmos account.
-        private static readonly string PrimaryKey = "<your key>";
+        private static readonly string PrimaryKey = "<your primary key>";
 
         // The Cosmos client instance
         private CosmosClient cosmosClient;

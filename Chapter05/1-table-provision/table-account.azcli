@@ -27,13 +27,24 @@ sas=$(az storage table generate-sas --name customers  --account-name $account --
 
 #replase quotes 
 sas=${sas//\"/}
+
+echo "-------------------------------------------"
+echo "SAS generated:"
 echo $sas
 
-#use generated SAS and request entities in JSON format d
+echo "-------------------------------------------"
+echo "Copy the connection string for further use:"
+connectionString=$(az storage account show-connection-string --name $account --resource-group AzureTables-RG  -o tsv)  
+echo $connectionString
+
+echo "-------------------------------------------"
+echo "use generated SAS and request entities in JSON format:"
 echo https://$account.table.core.windows.net/customers\(\)?$sas\&\$format=json
 
-#use generated SAS and request only active customers (IsActive = true) 
+echo "-------------------------------------------"
+echo "use generated SAS and request only active customers (IsActive = true)" 
 echo https://$account.table.core.windows.net/customers\(\)?$sas\&\$format=json\&\$filter=IsActive%20eq%20true
 
-#use generated SAS and receive customers by keys
+echo "-------------------------------------------"
+echo "use generated SAS and receive customers by keys"
 echo https://$account.table.core.windows.net/customers\(PartitionKey=\'ReSellers\',RowKey=\'Contoso\'\)?$sas\&\$format=json
