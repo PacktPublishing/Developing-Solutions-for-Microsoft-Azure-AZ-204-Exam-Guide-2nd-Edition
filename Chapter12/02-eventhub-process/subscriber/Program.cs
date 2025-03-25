@@ -10,6 +10,7 @@ using System.Threading;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.Amqp.Framing;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Azure.Messaging.EventHubs.Consumer;
 
 
 namespace subscriber
@@ -26,151 +27,182 @@ namespace subscriber
 
             var storageClient = new BlobContainerClient(StorageConnectionString, "checkpoint");
 
-            var processor = new SimpleEventProcessor(
-                    storageClient, 1, "$Default",
-                    EventHubConnectionString);
+            var processor = new EventProcessorClient(storageClient,
+                EventHubConsumerClient.DefaultConsumerGroupName,
+                EventHubConnectionString,
+                EventHubConnectionString.Split("EntityPath=")[1]);
 
-            using var cancellationSource = new CancellationTokenSource();
-            cancellationSource.CancelAfter(TimeSpan.FromSeconds(60));
+            var eventProcessor = new SimpleEventProcessor();
 
             try
             {
-                await processor.StartProcessingAsync(cancellationSource.Token);
-                await Task.Delay(Timeout.Infinite, cancellationSource.Token);
+                using var cancellationSource = new CancellationTokenSource();
+                cancellationSource.CancelAfter(TimeSpan.FromSeconds(60));
+                Console.WriteLine($"The process will automatically shutdown in 60 seconds");
 
-                Console.WriteLine("Receiving. Press key to stop worker.");
-                Console.ReadKey();
-            }
-            catch (TaskCanceledException )
-            {
-                // This is expected if the cancellation token is
-                // signaled.
-                await processor.StopProcessingAsync();
+                processor.PartitionClosingAsync += eventProcessor.CloseAsync;
+                processor.PartitionInitializingAsync += eventProcessor.InitializingAsync;
+                processor.ProcessEventAsync += eventProcessor.ProcessEventsAsync;
+                processor.ProcessErrorAsync += eventProcessor.ProcessErrorAsync;
+
+                try
+                {
+                    // Once processing has started, the delay will
+                    // block to allow processing until cancellation
+                    // is requested.
+
+                    await processor.StartProcessingAsync(cancellationSource.Token);
+                    await Task.Delay(Timeout.Infinite, cancellationSource.Token);
+
+                    Console.WriteLine("Receiving. Press key to stop worker.");
+                    Console.ReadKey();
+                }
+                catch (TaskCanceledException)
+                {
+                    // This is expected if the cancellation token is
+                    // signaled.
+                    await processor.StopProcessingAsync();
+                }
+                finally
+                {
+                    // Stopping may take up to the length of time defined
+                    // as the TryTimeout configured for the processor;
+                    // By default, this is 60 seconds.
+
+                    await processor.StopProcessingAsync();
+                }
             }
             finally
             {
-                // Stopping may take up to the length of time defined
-                // as the TryTimeout configured for the processor;
-                // By default, this is 60 seconds.
+                processor.PartitionClosingAsync -= eventProcessor.CloseAsync;
+                processor.PartitionInitializingAsync -= eventProcessor.InitializingAsync;
+                processor.ProcessEventAsync -= eventProcessor.ProcessEventsAsync;
+                processor.ProcessErrorAsync -= eventProcessor.ProcessErrorAsync;
 
-                await processor.StopProcessingAsync();
             }
-
         }
     }
 
-    public class SimpleEventProcessor : PluggableCheckpointStoreEventProcessor<EventProcessorPartition>
+    public class SimpleEventProcessor
     {
-        // This example uses a connection string, so only the single constructor
-        // was implemented; applications will need to shadow each constructor of
-        // the PluggableCheckpointStoreEventProcessor that they are using.
-
-        public SimpleEventProcessor(
-            BlobContainerClient storageClient,
-            int eventBatchMaximumCount,
-            string consumerGroup,
-            string connectionString,
-            EventProcessorOptions clientOptions = default)
-                : base(
-                    new BlobCheckpointStore(storageClient),
-                    eventBatchMaximumCount,
-                    consumerGroup,
-                    connectionString,
-                    clientOptions)
+        public void LogError(Exception ex)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
+            Console.ResetColor();
         }
 
-        protected async override Task OnProcessingEventBatchAsync(
-            IEnumerable<EventData> messages,
-            EventProcessorPartition partition,
-            CancellationToken cancellationToken)
-        {
-            EventData lastEvent = null;
-            try
-            {    
-                foreach (var currentEvent in messages)
-                {
-                    lastEvent = currentEvent;
-                    var data = currentEvent.EventBody;
-                    Console.WriteLine($"Event received. Partition: '{partition.PartitionId}', Data: '{data}'");
-
-                }
-
-                if (lastEvent != null)
-                {
-                    await UpdateCheckpointAsync(
-                        partition.PartitionId,
-                        CheckpointPosition.FromEvent(lastEvent),
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception while processing events: {ex}");
-            }
-        }
-
-        protected override Task OnProcessingErrorAsync(
-            Exception exception,
-            EventProcessorPartition partition,
-            string operationDescription,
-            CancellationToken cancellationToken)
+        public Task CloseAsync(PartitionClosingEventArgs args)
         {
             try
             {
-                if (partition != null)
+                if (args.CancellationToken.IsCancellationRequested)
                 {
-                    Console.WriteLine($"Error on Partition: {partition.PartitionId}, Error: {operationDescription}: {exception}");
+                    return Task.CompletedTask;
                 }
-                else
+
+                string description = args.Reason switch
                 {
-                    Console.Error.WriteLine(
-                        $"Exception while performing {operationDescription}: {exception}");
-                }
+                    ProcessingStoppedReason.OwnershipLost =>
+                        "Another processor claimed ownership",
+
+                    ProcessingStoppedReason.Shutdown =>
+                        "The processor is shutting down",
+
+                    _ => args.Reason.ToString()
+                };
+
+                Console.WriteLine($"Processor Shutting Down. Partition '{args.PartitionId}', Reason: '{description}'.");
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception while processing events: {ex}");
+                LogError(ex);
             }
 
             return Task.CompletedTask;
         }
 
-        protected override Task OnInitializingPartitionAsync(
-            EventProcessorPartition partition,
-            CancellationToken cancellationToken)
+        public Task InitializingAsync(PartitionInitializingEventArgs args)
         {
             try
             {
-                Console.WriteLine($"Initializing partition {partition.PartitionId}");
+                if (args.CancellationToken.IsCancellationRequested)
+                {
+                    return Task.CompletedTask;
+                }
+
+                Console.WriteLine($"Initialize partition: {args.PartitionId}");
+
+                // If no checkpoint was found, start processing
+                // events enqueued now or in the future.
+
+                EventPosition startPositionWhenNoCheckpoint =
+                    EventPosition.FromEnqueuedTime(DateTimeOffset.UtcNow);
+
+                args.DefaultStartingPosition = startPositionWhenNoCheckpoint;
             }
             catch (Exception ex)
             {
+                LogError(ex);
+            }
 
-                Console.WriteLine($"Exception while initializing a partition: {ex}");
+            return Task.CompletedTask;
+
+        }
+
+        public Task ProcessErrorAsync(ProcessErrorEventArgs args)
+        {
+            try
+            {
+                // Always log the exception.
+
+                Console.WriteLine("Error in the EventProcessorClient");
+                Console.WriteLine($"\tOperation: {args.Operation ?? "Unknown"}");
+                Console.WriteLine($"\tPartition: {args.PartitionId ?? "None"}");
+                Console.WriteLine($"\tException: {args.Exception}");
+                Console.WriteLine("");
+
+                // If cancellation was requested, assume that
+                // it was in response to an application request
+                // and take no action.
+
+                if (args.CancellationToken.IsCancellationRequested)
+                {
+                    return Task.CompletedTask;
+                }
+
+                // Allow the application to handle the exception according to
+                // its business logic.
+
+                LogError(args.Exception);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
             }
 
             return Task.CompletedTask;
         }
 
-        protected override Task OnPartitionProcessingStoppedAsync(
-            EventProcessorPartition partition,
-            ProcessingStoppedReason reason,
-            CancellationToken cancellationToken)
+        public Task ProcessEventsAsync(ProcessEventArgs eventArgs)
         {
+
             try
             {
-                Console.WriteLine(
-                    $"No longer processing partition {partition.PartitionId} because {reason}");
+
+                Console.WriteLine($"Partition: {eventArgs.Partition.PartitionId}, Received event: {eventArgs.Data.EventBody}");
+                eventArgs.UpdateCheckpointAsync(eventArgs.CancellationToken);
+
             }
-            catch (Exception ex)
+            catch (TaskCanceledException ex)
             {
- 
-                Console.WriteLine($"Exception while stopping processing for a partition: {ex}");
+                // This is expected when the delay is canceled.
+                LogError(ex);
             }
 
             return Task.CompletedTask;
+
         }
     }
 

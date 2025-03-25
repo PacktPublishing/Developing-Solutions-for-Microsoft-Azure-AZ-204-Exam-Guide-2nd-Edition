@@ -1,0 +1,48 @@
+##########################################################################################
+# Following commands should be executed in bash. 
+# Preferable execution shell is CloudShell 
+# The output and resources will be used for the next step.
+##########################################################################################
+
+
+eventhub=''   ## <<<<<--- please provide the short name of eventhub from the previous run
+
+groupname='EventHubDemo-RG'
+
+# Create resource group
+az group create -l eastus -n $groupname
+
+# To avoid name collisions generate a unique name for your account
+account=eventgri$RANDOM
+
+# create an Event Hubs namespace. 
+az eventhubs namespace create --name $account --resource-group $groupname -l eastus --sku Standard
+
+#Enable the Event Grid resource provider
+az provider register --namespace 'Microsoft.EventGrid'
+
+#Create a resource group to monitor
+az group create -l eastus -n EventGridMonitoring
+
+#Pull Azure subscription id
+subid=$(az account show --query id -o tsv)
+
+#Сonfigure event subscription endpoint
+endpoint=/subscriptions/$subid/resourceGroups/$groupname/providers/Microsoft.EventHub/namespaces/$eventhub/eventhubs/$eventhub
+source=subscriptions/$subid/resourceGroups/$groupname
+
+#Create a subscription for the events from the Resourece group
+az eventgrid event-subscription create --name 'group-monitor-sub' --endpoint-type 'eventhub' --source-resource-id $source --endpoint $endpoint
+
+###################################################################
+##  START EVENT HUB CONSUMER subscriber.exe FROM PREVIOUS DEMO   ##
+###################################################################
+
+###################################################################### 
+##  TO GENERATE ACTIVITY REPEAT THE FOLLOWING COMMAND several times  #
+###################################################################### 
+
+# Update tag of monitoring RG. Required about 45 to appear in the subscriber console
+az tag update --resource-id $source --operation merge --tags Code=$RANDOM
+
+# do not delete the provision resources, it will be required for next step

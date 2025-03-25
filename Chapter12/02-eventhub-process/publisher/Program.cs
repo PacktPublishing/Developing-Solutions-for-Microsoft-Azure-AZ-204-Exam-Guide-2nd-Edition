@@ -4,59 +4,64 @@ using System.Threading.Tasks;
 using System.Text;
 using Azure.Messaging.EventHubs.Producer;
 using System.Diagnostics.Metrics;
+using System.Reflection;
 
 namespace publisher
 {
  class Program
     {
-        private static EventHubProducerClient client;
         private const string EventHubConnectionString = "<you event hub connection string from previous script run>";
   
         private static async Task Main(string[] args)
         {
-            client = new EventHubProducerClient(EventHubConnectionString);
 
-            await SendEventsToEventHubAsync(10);
+            var producer = new EventHubProducerClient(EventHubConnectionString, EventHubConnectionString.Split("EntityPath=")[1]);
 
-            await client.CloseAsync();
+            try
+            {
+                int batchNum = 1;
+                while (true)
+                {
+                    await SendEventsToEventHubAsync(producer, batchNum++, 10);
+                    Console.WriteLine($"Press any key to send more events");
+                    Console.ReadKey();
+                }
+            }
+            finally
+            {
+                await producer.CloseAsync();
+            }
 
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadLine();
         }
 
         // Creates an Event Hub client and sends 10 messages to the event hub.
-        private static async Task SendEventsToEventHubAsync(int numMsgToSend)
+        private static async Task SendEventsToEventHubAsync(EventHubProducerClient producer, int batchNum, int numMsgToSend)
         {
-            for (var i = 0; i < numMsgToSend; i=i+2)
+            using EventDataBatch eventBatch = await producer.CreateBatchAsync();
+
+            for (var i = 0; i < numMsgToSend; i = i + 2)
             {
-                //Create batch with 2 events
-                using EventDataBatch eventBatch = await client.CreateBatchAsync();
-                {
-                    for (var j = 0; j < 2; j++)
+
+
+
+                    //Create batch with 2 events
+                    var eventBody = new BinaryData($"Event Number: {i} from batch {batchNum}");
+                    var eventData = new EventData(eventBody);
+
+                    if (!eventBatch.TryAdd(eventData))
                     {
-
-                        try
-                        {
-                            var message = $"Event #{i+j}";
-
-                            var eventData = new EventData(new BinaryData(message));
-                            Console.WriteLine($"Sending event: {message}");
-                            eventBatch.TryAdd(eventData);
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine($"{DateTime.Now} > Exception: {exception.Message}");
-                        }
+                        // At this point, the batch is full but our last event was not
+                        // accepted.  For our purposes, the event is unimportant so we
+                        // will intentionally ignore it.  In a real-world scenario, a
+                        // decision would have to be made as to whether the event should
+                        // be dropped or published on its own.
+                        break;
                     }
 
                 }
+                await producer.SendAsync(eventBatch);
 
-                await Task.Delay(10);
-                await client.SendAsync(eventBatch);
-
-            }   
-
-            Console.WriteLine($"{numMsgToSend} events sent.");
+           Console.WriteLine($"{numMsgToSend} events sent.");
         }
     }
 }

@@ -9,14 +9,6 @@ az group create -l eastus -n EventGridDemo-RG
 # create a topic for custom events
 az eventgrid topic create --name custom-events-web --resource-group EventGridDemo-RG -l eastus
 
-# Show endpoint for submitting custom events
-echo 'your endpoint:'
-az eventgrid topic show --name custom-events-web --resource-group EventGridDemo-RG --query "endpoint" -o tsv
-
-# retrieve access key for event publisher
-echo 'your access key:'
-az eventgrid topic key list --name custom-events-web --resource-group EventGridDemo-RG --query "key1" -o tsv
-
 # generate name for Event Grid Viewer
 sitename=handler$RANDOM
 
@@ -31,7 +23,16 @@ subid=$(az account show --query id -o tsv)
 
 # create a subscription for Event Grid Viewer
 # this command works better in CloudShell, but variables need to be defined 
-az eventgrid event-subscription create --source-resource-id "/subscriptions/$subid/resourceGroups/EventGridDemo-RG/providers/Microsoft.EventGrid/topics/custom-events-web" --name custom-handler-web --endpoint $endpoint
+az eventgrid event-subscription create --source-resource-id "subscriptions/$subid/resourceGroups/EventGridDemo-RG/providers/Microsoft.EventGrid/topics/custom-events-web" --name custom-handler-web --endpoint $endpoint
+
+# Show endpoint for submitting custom events
+echo 'your endpoint:'
+az eventgrid topic show --name custom-events-web --resource-group EventGridDemo-RG --query "endpoint" -o tsv
+
+# retrieve access key for event publisher
+echo 'your access key:'
+az eventgrid topic key list --name custom-events-web --resource-group EventGridDemo-RG --query "key1" -o tsv
+
 
 ###################################################################
 ##  START PUBLISHER publisher.exe FROM CURRENT FOLDER            ##
@@ -39,6 +40,9 @@ az eventgrid event-subscription create --source-resource-id "/subscriptions/$sub
 
 # observe the events on Event Grid Viewer
 az webapp browse --name $sitename --resource-group EventGridDemo-RG
+
+# alernatively you can open following link:
+echo https://$sitename.azurewebsites.net/
 
 # cleanup 
 # Now all resource group EventGridDemo-RG, EventHubDemo-RG and EventGridMonitoring can be deleted
