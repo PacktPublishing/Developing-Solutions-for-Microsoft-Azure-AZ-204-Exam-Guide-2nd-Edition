@@ -10,7 +10,7 @@ az group create -l eastus -n AzureBlobs-RG
 account=azureblobs$RANDOM
 
 #create an Azure Storage account 
-az storage account create --name $account --resource-group AzureBlobs-RG  
+az storage account create --name $account --resource-group AzureBlobs-RG  --allow-blob-public-access true
 
 #retrieve key
 key=$(az storage account keys list --account-name $account --query [0].value -o tsv)
