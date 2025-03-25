@@ -10,7 +10,8 @@ account='apim-XXXXXX'
 webapp='apim-backend-XXXXX'
 
 # Swagger URL from previously provisioned weather service. URL must be ended with /swagger/v1/swagger.json
-url='https://apim-backend-XXXX.azurewebsites.net/swagger/v1/swagger.json'
+url=https://$webapp.azurewebsites.net/openapi/v1.json
+echo $url
 
 # Adding API #1, if adding process produces an error continue to the next adding API step
 az apim api import --service-url https://$webapp.azurewebsites.net/ --display-name weather-api --api-id weather-api --path weather-api --specification-url $url --specification-format OpenApiJson -g APIM-RG -n $account 
@@ -30,7 +31,6 @@ az apim product create -g APIM-RG -n $account --product-name "Color Management (
 # Adding APIs
 az apim product api add -g APIM-RG -n $account --api-id color-api --product-id colors 
 
-
 # Adding API #3, if adding process produces an error continue to the next adding API step
 az apim api import -g APIM-RG -n $account --display-name calc-api --api-id calc-api --path calc-api --specification-url http://calcapi.cloudapp.net/calcapi.json --specification-format Swagger -g APIM-RG -n $account 
 
@@ -40,12 +40,3 @@ az apim product create -g APIM-RG -n $account --product-name "Calculator API" --
 # Adding APIs
 az apim product api add -g APIM-RG -n $account --api-id calc-api  --product-id calculator 
 
-
-# Adding API #4, if adding process produce an error continue to the next adding API step
-az apim api import -g APIM-RG -n $account --display-name conference-api --api-id conference-api --path conference-api --specification-url https://conferenceapi.azurewebsites.net?format=json --specification-format OpenApiJson -g APIM-RG -n $account 
-
-# Create Product
-az apim product create -g APIM-RG -n $account --product-name "Conference API" --product-id conference-api  --subscription-required true --state published --description "This product to list conferences"
-
-# Adding APIs
-az apim product api add -g APIM-RG -n $account --api-id conference-api --product-id conference-api  
