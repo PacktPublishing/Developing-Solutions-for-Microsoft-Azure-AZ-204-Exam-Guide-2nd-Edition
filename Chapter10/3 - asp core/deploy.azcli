@@ -26,4 +26,5 @@ Compress-Archive -Path publish\* -DestinationPath TheCloudShopsAI.zip -force
 az webapp deploy --resource-group appinsightsdemo-rg --name $appName --type zip --src-path 'TheCloudShopsAI.zip'
 
 #check the web app
+#this command might not work properly. If so, just reload the page opened on the website you previously loaded. 
 az webapp browse --name $appName --resource-group AppInsightsDemo-RG

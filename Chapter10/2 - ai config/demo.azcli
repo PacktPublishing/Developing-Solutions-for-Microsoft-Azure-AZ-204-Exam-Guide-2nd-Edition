@@ -5,7 +5,7 @@
 
 #update the name of the web app from the previous demo before running other commands. 
 #the app name from the previous run.
-appName=" "
+appName=""
 
 # Install CLI extension to provision App Insights
 az extension add -n application-insights
