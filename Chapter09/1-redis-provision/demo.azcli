@@ -2,6 +2,8 @@
 # These commands should be executed from Azure Cloud Shell bash 
 ################################################################
 
+# PROVISIONING OF THE REDIS CAN TAKE UP TO 10 MIN
+
 #create the resource group
 az group create --location eastus2 --name AzureCache-RG
 
@@ -13,6 +15,10 @@ az redis create --location eastus2 --name $account --resource-group AzureCache-R
 
 #retrieve key and address 
 key=$(az redis list-keys --name $account --resource-group AzureCache-RG --query primaryKey -o tsv)
-echo $key
+echo "Redis account uri:"
 echo $account.redis.cache.windows.net
+
+echo "Redis key:"
+echo $key
+
 

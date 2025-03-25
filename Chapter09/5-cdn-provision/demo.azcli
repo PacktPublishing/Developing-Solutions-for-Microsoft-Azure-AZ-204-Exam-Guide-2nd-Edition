@@ -20,7 +20,7 @@ key=$(az storage account keys list  --account-name $blobaccount --query "[0].{Na
 #create the container
 az storage container create --name files --public-access container --account-name $blobaccount --account-key $key
 
-#output the URL for reference
+echo "output the storage URL for reference:"
 echo https://$blobaccount.blob.core.windows.net/files
 
 
@@ -47,19 +47,20 @@ az storage blob service-properties update --account-name $blobaccount --static-w
 sed -i "s/<blobaccount>/$blobaccount/" index.html 
 
 #enable static web app
-az storage blob service-properties update --account-name $blobaccount --static-website --index-document index.html
+az storage blob service-properties update --account-name $blobaccount --static-website --index-document index.html --account-key $key
 
 #upload index.html to the folder
-az storage blob upload  --account-name $blobaccount  --account-key $key --container-name '$web' --file index.html --name index.html
+az storage blob upload  --account-name $blobaccount  --account-key $key --container-name '$web' --file index.html --name index.html 
 
 #retrieve static Url
 url=$(az storage account show --name $blobaccount --query "primaryEndpoints.web" --output tsv)
+echo "your website url:"
 echo $url
 
 #you can visit this URL from your browser and enable the F12 tool to monitor the speed of loading.
 
 #create a Basic SKU instance
-az cdn profile create --location eastus2 --name $cdnaccount --resource-group AzureCDN-RG --sku Standard_Microsoft
+az cdn profile create --name $cdnaccount --resource-group AzureCDN-RG --sku Standard_Microsoft
 
 #create CDN endpoint 
 az cdn endpoint create --name $cdnaccount  --origin $blobaccount.blob.core.windows.net --origin-host-header $blobaccount.blob.core.windows.net --origin-path //files --profile-name $cdnaccount --resource-group AzureCDN-RG

@@ -8,8 +8,8 @@ namespace CacheTest
 {
     class Program
     {
-        static string EndPoint = "";
-        static string Password = "";
+        static string EndPoint = "<your redis uri>";
+        static string Password = "<your redis key>";
         static IDatabase cache;
 
         static void Main(string[] args)
