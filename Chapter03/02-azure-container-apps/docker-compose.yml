@@ -6,7 +6,7 @@ services:
       context: ./demoapi
       dockerfile: Dockerfile
     ports:
-      - "5101:80"
+      - "5101:8080"
 
   demo-app:
     image: demo-app
@@ -14,7 +14,7 @@ services:
       context: ./demoapp
       dockerfile: Dockerfile
     ports:
-      - "5102:80"
+      - "5102:8080"
     depends_on:
       - demo-api
     environment:
